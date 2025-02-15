@@ -1,0 +1,61 @@
+import { PrismaService } from "../prisma.service"
+import { CreateUserInput } from "src/users/dto/create-user.input"
+import { User } from "src/users/entities/user.entity"
+import { User as PrismaUser } from "@prisma/client"
+import { UsersRepository } from "src/users/users.repository"
+
+export class PrismaUsersRepository implements UsersRepository {
+  private prisma = PrismaService.getInstance()
+
+  private prismaUserDto(prisma: PrismaUser): User {
+    return {
+      id: prisma.id,
+      name: prisma.name,
+      email: prisma.email,
+    }
+  }
+
+  async create(data: CreateUserInput): Promise<User> {
+    const user = await this.prisma.user.create({
+      data: {
+        name: data.name,
+        email: data.email,
+        password: data.password
+      }
+    })
+    return this.prismaUserDto(user)
+  }
+
+  async findAll(): Promise<User[]> {
+    const users = await this.prisma.user.findMany()
+    return users.map(user => this.prismaUserDto(user))
+  }
+
+  async findOne(id: number): Promise<User> {
+    const user = await this.prisma.user.findUnique({
+      where: { id }
+    })
+    if (!user) throw new Error('User not found')
+    return this.prismaUserDto(user)
+  }
+
+  async update(id: number, data: Partial<CreateUserInput>): Promise<User> {
+    const user = await this.prisma.user.update({
+      where: { id },
+      data: {
+        name: data.name,
+        email: data.email,
+        password: data.password
+      }
+    })
+
+    return this.prismaUserDto(user)
+  }
+
+  async remove(id: number): Promise<void> {
+    await this.prisma.user.delete({
+      where: { id }
+    })
+  }
+
+}
