@@ -15,7 +15,6 @@ export class AuthService {
   async register(data: CreateUserInput): Promise<AuthView> {
     const user = await this.usersService.create(data)
     const token = await this.generateToken(user.id)
-
     return new AuthView(user, token)
   }
 

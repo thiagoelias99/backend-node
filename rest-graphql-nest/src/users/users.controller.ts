@@ -8,6 +8,7 @@ import { JwtAuthGuard } from "src/auth/guards/jwt-auth/jwt-auth.guard"
 
 @ApiTags('Users')
 @Controller('users')
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) { }
 
@@ -24,7 +25,6 @@ export class UsersController {
   }
 
   @Get()
-  @UseGuards(JwtAuthGuard)
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({
     status: 200,

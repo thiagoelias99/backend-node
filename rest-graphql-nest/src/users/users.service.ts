@@ -1,9 +1,10 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { CreateUserInput } from './dto/create-user.input'
 import { UsersRepository } from "./users.repository"
 import { UserView } from "./dto/user.view"
 import { UpdateUserInput } from "./dto/update-user.input"
 import { hash, verify } from "argon2"
+import { InvalidCredentialsException } from "src/custom-errors"
 
 @Injectable()
 export class UsersService {
@@ -29,11 +30,13 @@ export class UsersService {
     try {
       const user = await this.usersRepository.findByEmail(email)
       const passwordValid = await verify(user.password, password)
-      if (!passwordValid) throw new UnauthorizedException("Invalid email or password")
+      if (!passwordValid) throw new InvalidCredentialsException()
       return new UserView(user)
     } catch (error) {
       console.error(error)
-      throw new UnauthorizedException("Invalid email or password")
+      if (error instanceof InvalidCredentialsException) throw error
+      if (error instanceof NotFoundException) throw new InvalidCredentialsException()
+      throw new InternalServerErrorException(error.message)
     }
   }
 
