@@ -2,7 +2,9 @@ import { ApiProperty } from "@nestjs/swagger"
 import { Post } from "../entities/post.entity"
 import { CommentView } from "src/comments/dto/comment.view"
 import { PaginateInput } from "src/utils/paginate.input"
+import { Field, Int, ObjectType } from "@nestjs/graphql"
 
+@ObjectType()
 export class PostView {
   constructor(post: Post) {
     this.id = post.id
@@ -13,18 +15,23 @@ export class PostView {
   }
 
   @ApiProperty()
+  @Field(() => Int)
   id: number
 
   @ApiProperty()
+  @Field(() => String)
   name: string
 
   @ApiProperty()
+  @Field(() => String)
   content: string
 
   @ApiProperty()
+  @Field(() => String)
   author: string
 
   @ApiProperty({ type: [CommentView] })
+  @Field(() => [CommentView])
   comments: CommentView[]
 }
 

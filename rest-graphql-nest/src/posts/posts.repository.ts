@@ -7,6 +7,7 @@ export abstract class PostsRepository {
   abstract create(data: CreatePostInput, userId: number): Promise<Post>
   abstract findAll(query: QueryPostInput): Promise<[Post[], number]>
   abstract findOne(id: number): Promise<Post>
+  abstract count(): Promise<number>
   abstract update(id: number, data: UpdatePostInput, userId: number): Promise<Post>
   abstract remove(id: number, userId: number): Promise<void>
 }

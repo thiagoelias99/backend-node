@@ -1,6 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { Comment } from "../entities/comment.entity"
+import { Field, Int, ObjectType } from "@nestjs/graphql"
 
+@ObjectType()
 export class CommentView {
   constructor(comment: Comment) {
     this.id = comment.id
@@ -10,14 +12,18 @@ export class CommentView {
   }
 
   @ApiProperty()
+  @Field(() => Int)
   id: number
 
   @ApiProperty()
+  @Field(() => String)
   content: string
 
   @ApiProperty()
+  @Field(() => String)
   author: string
 
   @ApiProperty()
+  @Field(() => Int)
   authorId: number
 }

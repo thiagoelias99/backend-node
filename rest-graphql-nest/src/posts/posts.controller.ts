@@ -49,7 +49,7 @@ export class PostsController {
     query.limit = +limit || 10
     query.page = +page || 1
 
-    return this.postsService.findAll(query)
+    return this.postsService.findAllPaginated(query)
   }
 
   @Get(':id')

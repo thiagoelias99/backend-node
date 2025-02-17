@@ -101,6 +101,10 @@ export class PrismaPostsRepository extends PostsRepository {
     return this.prismaPostDto(post)
   }
 
+  async count(): Promise<number> {
+    return this.prisma.post.count()
+  }
+
   async update(id: number, data: UpdatePostInput, userId: number): Promise<Post> {
     try {
       const post = await this.prisma.post.update({

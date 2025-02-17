@@ -15,10 +15,20 @@ export class PostsService {
     return new PostView(post)
   }
 
-  async findAll(query: QueryPostInput): Promise<PaginatedPostView> {
+  async findAllPaginated(query: QueryPostInput): Promise<PaginatedPostView> {
     const [posts, count] = await this.postsRepository.findAll(query)
 
     return new PaginatedPostView(posts, count, query)
+  }
+
+  async findAll(query: QueryPostInput): Promise<PostView[]> {
+    const [posts] = await this.postsRepository.findAll(query)
+
+    return posts.map(post => new PostView(post))
+  }
+
+  async count(): Promise<number> {
+    return this.postsRepository.count()
   }
 
   async findOne(id: number): Promise<PostView> {
