@@ -63,10 +63,10 @@ export class PrismaPostsRepository extends PostsRepository {
     return this.prismaPostDto(post)
   }
 
-  async update(id: number, data: UpdatePostInput): Promise<Post> {
+  async update(id: number, data: UpdatePostInput, userId: number): Promise<Post> {
     try {
       const post = await this.prisma.post.update({
-        where: { id },
+        where: { id, authorId: userId },
         data: {
           title: data.name,
           content: data.content
@@ -86,10 +86,10 @@ export class PrismaPostsRepository extends PostsRepository {
     }
   }
 
-  async remove(id: number): Promise<void> {
+  async remove(id: number, userId: number): Promise<void> {
     try {
       await this.prisma.post.delete({
-        where: { id }
+        where: { id, authorId: userId }
       })
     } catch (error) {
       console.error(error)

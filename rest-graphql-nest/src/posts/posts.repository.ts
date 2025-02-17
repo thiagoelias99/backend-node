@@ -6,6 +6,6 @@ export abstract class PostsRepository {
   abstract create(data: CreatePostInput, userId: number): Promise<Post>
   abstract findAll(): Promise<Post[]>
   abstract findOne(id: number): Promise<Post>
-  abstract update(id: number, data: UpdatePostInput): Promise<Post>
-  abstract remove(id: number): Promise<void>
+  abstract update(id: number, data: UpdatePostInput, userId: number): Promise<Post>
+  abstract remove(id: number, userId: number): Promise<void>
 }

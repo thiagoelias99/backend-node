@@ -58,8 +58,9 @@ export class PostsController {
     description: 'OK',
     type: PostView,
   })
-  update(@Param('id') id: string, @Body() data: UpdatePostInput) {
-    return this.postsService.update(+id, data)
+  update(@Req() req, @Param('id') id: string, @Body() data: UpdatePostInput) {
+    const userId = +req.user.id
+    return this.postsService.update(+id, data, +userId)
   }
 
   @Delete(':id')
@@ -70,7 +71,8 @@ export class PostsController {
     status: 200,
     description: 'OK',
   })
-  remove(@Param('id') id: string) {
-    return this.postsService.remove(+id)
+  remove(@Req() req, @Param('id') id: string) {
+    const userId = +req.user.id
+    return this.postsService.remove(+id, +userId)
   }
 }

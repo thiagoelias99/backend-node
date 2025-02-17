@@ -26,13 +26,13 @@ export class PostsService {
     return new PostView(post)
   }
 
-  async update(id: number, data: UpdatePostInput): Promise<PostView> {
-    const post = await this.postsRepository.update(id, data)
+  async update(id: number, data: UpdatePostInput, userId: number): Promise<PostView> {
+    const post = await this.postsRepository.update(id, data, userId)
 
     return new PostView(post)
   }
 
-  async remove(id: number) {
-    return this.postsRepository.remove(id)
+  async remove(id: number, userId: number) {
+    return this.postsRepository.remove(id, userId)
   }
 }
