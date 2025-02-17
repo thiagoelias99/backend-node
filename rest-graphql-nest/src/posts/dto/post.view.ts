@@ -1,5 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
 import { Post } from "../entities/post.entity"
+import { CommentView } from "src/comments/dto/comment.view"
 
 export class PostView {
   constructor(post: Post) {
@@ -7,6 +8,7 @@ export class PostView {
     this.name = post.name
     this.content = post.content
     this.author = post.authorName
+    this.comments = post.comments.map(comment => new CommentView(comment))
   }
 
   @ApiProperty()
@@ -20,4 +22,7 @@ export class PostView {
 
   @ApiProperty()
   author: string
+
+  @ApiProperty({ type: [CommentView] })
+  comments: CommentView[]
 }

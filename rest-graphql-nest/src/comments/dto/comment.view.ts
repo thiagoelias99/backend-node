@@ -6,6 +6,7 @@ export class CommentView {
     this.id = comment.id
     this.content = comment.content
     this.author = comment.authorName
+    this.authorId = comment.authorId
   }
 
   @ApiProperty()
@@ -16,4 +17,7 @@ export class CommentView {
 
   @ApiProperty()
   author: string
+
+  @ApiProperty()
+  authorId: number
 }

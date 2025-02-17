@@ -9,18 +9,42 @@ import { UpdatePostInput } from "src/posts/dto/update-post.input"
 export class PrismaPostsRepository extends PostsRepository {
   private prisma = PrismaService.getInstance()
 
-  private prismaPostDto(prisma: Prisma.PostGetPayload<{
+  private payload = {
     include: {
-      author: true,
-      comments: true
+      author: {
+        select: {
+          id: true,
+          name: true
+        }
+      },
+      comments: {
+        include: {
+          author: {
+            select: {
+              id: true,
+              name: true
+            }
+          }
+        },
+        orderBy: { id: 'desc' as Prisma.SortOrder }
+      }
     }
-  }>): Post {
+  }
+
+  private prismaPostDto(post: Prisma.PostGetPayload<typeof this.payload>): Post {
     return {
-      id: prisma.id,
-      name: prisma.title,
-      content: prisma.content,
-      authorId: prisma.authorId,
-      authorName: prisma.author.name,
+      id: post.id,
+      name: post.title,
+      content: post.content,
+      authorId: post.authorId,
+      authorName: post.author.name,
+      comments: post.comments.map(comment => ({
+        id: comment.id,
+        content: comment.content,
+        authorId: comment.author.id,
+        authorName: comment.author.name,
+        postId: post.id
+      }))
     }
   }
 
@@ -31,10 +55,7 @@ export class PrismaPostsRepository extends PostsRepository {
         content: data.content,
         authorId: userId
       },
-      include: {
-        author: true,
-        comments: true
-      }
+      include: this.payload.include
     })
 
     return this.prismaPostDto(post)
@@ -42,10 +63,8 @@ export class PrismaPostsRepository extends PostsRepository {
 
   async findAll(): Promise<Post[]> {
     const posts = await this.prisma.post.findMany({
-      include: {
-        author: true,
-        comments: true
-      }
+      include: this.payload.include,
+      orderBy: { id: 'desc' }
     })
 
     return posts.map(this.prismaPostDto)
@@ -54,10 +73,7 @@ export class PrismaPostsRepository extends PostsRepository {
   async findOne(id: number): Promise<Post> {
     const post = await this.prisma.post.findUnique({
       where: { id },
-      include: {
-        author: true,
-        comments: true
-      }
+      include: this.payload.include
     })
     if (!post) throw new NotFoundException('Post not found')
     return this.prismaPostDto(post)
@@ -71,10 +87,7 @@ export class PrismaPostsRepository extends PostsRepository {
           title: data.name,
           content: data.content
         },
-        include: {
-          author: true,
-          comments: true
-        }
+        include: this.payload.include
       })
       return this.prismaPostDto(post)
     } catch (error) {
