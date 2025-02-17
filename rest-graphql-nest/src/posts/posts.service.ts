@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common'
 import { CreatePostInput } from "./dto/create-post.input"
 import { PostsRepository } from "./posts.repository"
-import { PostView } from "./dto/post.view"
+import { PaginatedPostView, PostView } from "./dto/post.view"
 import { UpdatePostInput } from "./dto/update-post.input"
+import { PaginateInput } from "src/utils/paginate.input"
 
 @Injectable()
 export class PostsService {
@@ -14,10 +15,10 @@ export class PostsService {
     return new PostView(post)
   }
 
-  async findAll(): Promise<PostView[]> {
-    const posts = await this.postsRepository.findAll()
+  async findAll(query: PaginateInput): Promise<PaginatedPostView> {
+    const [posts, count] = await this.postsRepository.findAll(query)
 
-    return posts.map(post => new PostView(post))
+    return new PaginatedPostView(posts, count, query)
   }
 
   async findOne(id: number): Promise<PostView> {

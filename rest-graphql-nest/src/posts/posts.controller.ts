@@ -1,10 +1,11 @@
-import { Controller, Post, Body, UseGuards, Req, Get, Param, Patch, Delete } from '@nestjs/common'
+import { Controller, Post, Body, UseGuards, Req, Get, Param, Patch, Delete, Query, BadRequestException } from '@nestjs/common'
 import { PostsService } from './posts.service'
 import { CreatePostInput } from "./dto/create-post.input"
 import { JwtAuthGuard } from "src/auth/guards/jwt-auth/jwt-auth.guard"
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
-import { PostView } from "./dto/post.view"
+import { PaginatedPostView, PostView } from "./dto/post.view"
 import { UpdatePostInput } from "./dto/update-post.input"
+import { PaginateInput } from "src/utils/paginate.input"
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -32,10 +33,22 @@ export class PostsController {
   @ApiResponse({
     status: 200,
     description: 'OK',
-    type: [PostView],
+    type: PaginatedPostView,
   })
-  findAll(@Req() req) {
-    return this.postsService.findAll()
+  findAll(
+    @Query() query: PaginateInput) {
+    const { limit, page } = query
+    if (limit && (limit.toString() == "" || isNaN(+limit) || +limit < 1 || +limit > 100)) {
+      throw new BadRequestException('limit must be a number between 1 and 100')
+    }
+    if (page && (page.toString() == "" || isNaN(+page) || +page < 1)) {
+      throw new BadRequestException('page must be a number greater than 0')
+    }
+
+    query.limit = +limit || 10
+    query.page = +page || 1
+
+    return this.postsService.findAll(query)
   }
 
   @Get(':id')
