@@ -3,7 +3,7 @@ import { CreatePostInput } from "./dto/create-post.input"
 import { PostsRepository } from "./posts.repository"
 import { PaginatedPostView, PostView } from "./dto/post.view"
 import { UpdatePostInput } from "./dto/update-post.input"
-import { PaginateInput } from "src/utils/paginate.input"
+import { QueryPostInput } from "./dto/query-post.input"
 
 @Injectable()
 export class PostsService {
@@ -15,7 +15,7 @@ export class PostsService {
     return new PostView(post)
   }
 
-  async findAll(query: PaginateInput): Promise<PaginatedPostView> {
+  async findAll(query: QueryPostInput): Promise<PaginatedPostView> {
     const [posts, count] = await this.postsRepository.findAll(query)
 
     return new PaginatedPostView(posts, count, query)

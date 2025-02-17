@@ -5,7 +5,7 @@ import { Post } from "src/posts/entities/post.entity"
 import { CreatePostInput } from "src/posts/dto/create-post.input"
 import { NotFoundException } from "@nestjs/common"
 import { UpdatePostInput } from "src/posts/dto/update-post.input"
-import { PaginateInput } from "src/utils/paginate.input"
+import { QueryPostInput } from "src/posts/dto/query-post.input"
 
 export class PrismaPostsRepository extends PostsRepository {
   private prisma = PrismaService.getInstance()
@@ -62,18 +62,34 @@ export class PrismaPostsRepository extends PostsRepository {
     return this.prismaPostDto(post)
   }
 
-  async findAll(query: PaginateInput): Promise<[Post[], number]> {
+  async findAll(query: QueryPostInput): Promise<[Post[], number]> {
     const limit = Number(query.limit)
     const page = Number(query.page)
 
+    const where = {
+      title: {
+        contains: query.name,
+      },
+      content: {
+        contains: query.content,
+      },
+      authorId: query.authorId,
+      author: {
+        name: {
+          contains: query.authorName
+        }
+      }
+    }
+
     const posts = await this.prisma.post.findMany({
+      where,
       include: this.payload.include,
       orderBy: { id: 'desc' },
       skip: limit * (page - 1),
       take: limit,
     })
 
-    return [posts.map(this.prismaPostDto), await this.prisma.post.count()]
+    return [posts.map(this.prismaPostDto), await this.prisma.post.count({ where })]
   }
 
   async findOne(id: number): Promise<Post> {

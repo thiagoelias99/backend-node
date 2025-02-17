@@ -6,6 +6,7 @@ import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagg
 import { PaginatedPostView, PostView } from "./dto/post.view"
 import { UpdatePostInput } from "./dto/update-post.input"
 import { PaginateInput } from "src/utils/paginate.input"
+import { QueryPostInput } from "./dto/query-post.input"
 
 @ApiTags('Posts')
 @Controller('posts')
@@ -36,7 +37,7 @@ export class PostsController {
     type: PaginatedPostView,
   })
   findAll(
-    @Query() query: PaginateInput) {
+    @Query() query: QueryPostInput) {
     const { limit, page } = query
     if (limit && (limit.toString() == "" || isNaN(+limit) || +limit < 1 || +limit > 100)) {
       throw new BadRequestException('limit must be a number between 1 and 100')
