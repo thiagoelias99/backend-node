@@ -1,0 +1,24 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type CommentView {
+  id: Int!
+  content: String!
+  author: String!
+  authorId: Int!
+}
+
+type PostView {
+  id: Int!
+  name: String!
+  content: String!
+  author: String!
+  comments: [CommentView!]!
+}
+
+type Query {
+  posts(limit: Float, page: Float, authorId: Float, authorName: String, content: String, name: String): [PostView!]!
+  post(id: Int!): PostView!
+  postsCount: Int!
+}
