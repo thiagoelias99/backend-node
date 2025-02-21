@@ -26,6 +26,11 @@ export class UsersService {
     return new UserView(user)
   }
 
+  async findByEmail(email: string): Promise<UserView> {
+    const user = await this.usersRepository.findByEmail(email)
+    return new UserView(user)
+  }
+
   async login(email: string, password: string): Promise<UserView> {
     try {
       const user = await this.usersRepository.findByEmail(email)

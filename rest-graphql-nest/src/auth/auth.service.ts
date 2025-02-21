@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common'
+import { Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common'
 import { UsersService } from "src/users/users.service"
 import { CreateUserInput } from "src/users/dto/create-user.input"
 import { AuthView } from "./dto/auth.view"
@@ -37,6 +37,19 @@ export class AuthService {
       if (!user) throw new UnauthorizedException("Invalid token")
       return { id: user.id }
     } catch (error) {
+      console.error(error)
+      throw new UnauthorizedException("Invalid token")
+    }
+  }
+
+  async validateGoogleUser(googleUser: CreateUserInput) {
+    try {
+      const user = await this.usersService.findByEmail(googleUser.email)
+      return user
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        return await this.usersService.create(googleUser)
+      }
       console.error(error)
       throw new UnauthorizedException("Invalid token")
     }
